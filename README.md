@@ -19,7 +19,7 @@ The sheet in `cast/cast_sheet.jpg` is the three-character reference: Milo (yello
 
 ## Deploy
 
-GPU: **RTX 4090** (24 GB). Same class as the Wan endpoint. Container disk **50 GB** (the image holds the weights). Workers **min 0, max 1**, idle timeout **5 s**, FlashBoot **on**. Set the CUDA floor to **12.8** so the worker does not land on an old host.
+GPU: **RTX 4090** (24 GB). Same class as the Wan endpoint. Container disk **50 GB** (the image holds the weights). Workers **min 0, max 1**, idle timeout **5 s**, FlashBoot **on**. CUDA **13.2** only: that is the driver version with 4090 capacity. The image itself is CUDA 12.8 and runs on that driver.
 
 ```bash
 cd ~/AI/ImageGen
