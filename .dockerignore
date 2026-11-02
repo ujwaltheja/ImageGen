@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+.git
+.venv
+client.py
+test_prompt.py
+README.md
