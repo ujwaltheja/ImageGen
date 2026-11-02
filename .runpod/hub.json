@@ -1,0 +1,55 @@
+{
+  "title": "ImageGen",
+  "description": "Fast preschool stills of Milo, Rosie, and Ollie. FLUX.2 Klein 4B, four steps, cast sheet on every image.",
+  "type": "serverless",
+  "category": "image",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 50,
+    "gpuCount": 1,
+    "gpuIds": "ADA_24",
+    "allowedCudaVersions": [
+      "12.8",
+      "12.7",
+      "12.6",
+      "12.5",
+      "12.4",
+      "12.3",
+      "12.2",
+      "12.1",
+      "12.0"
+    ],
+    "presets": [
+      {
+        "name": "Fast",
+        "defaults": {
+          "MODEL_ID": "black-forest-labs/FLUX.2-klein-4B",
+          "WARMUP": "1"
+        }
+      }
+    ],
+    "env": [
+      {
+        "key": "MODEL_ID",
+        "input": {
+          "name": "Model",
+          "type": "huggingface",
+          "description": "Diffusers model id. Klein 4B is the fast Apache-2.0 default.",
+          "default": "black-forest-labs/FLUX.2-klein-4B",
+          "required": true
+        }
+      },
+      {
+        "key": "WARMUP",
+        "input": {
+          "type": "boolean",
+          "name": "Warm up on start",
+          "description": "Draw one throwaway still while the worker starts so the next request is faster.",
+          "default": true,
+          "trueValue": "1",
+          "falseValue": "0"
+        }
+      }
+    ]
+  }
+}

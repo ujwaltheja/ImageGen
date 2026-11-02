@@ -1,4 +1,6 @@
-# Kids stills — RunPod serverless
+[![Runpod](https://api.runpod.io/badge/ujwaltheja/ImageGen)](https://console.runpod.io/hub/listing/ujwaltheja/ImageGen)
+
+# Kids stills — Runpod serverless
 
 Scene pictures for Tiny Tales (Milo, Rosie, Ollie). One cast sheet is baked into the worker and attached on every job, the same way Kids Video Studio already describes the cast in `cast_string`.
 

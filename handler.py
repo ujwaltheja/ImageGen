@@ -94,21 +94,20 @@ def _jpeg_b64(image: Image.Image) -> str:
     return base64.b64encode(buf.getvalue()).decode()
 
 
-def handler(job: dict) -> dict:
-    inp = job.get("input") or {}
-    if inp.get("health"):
+def process_data(input_data: dict) -> dict:
+    """One still. Runpod stores this dict as the job output."""
+    if input_data.get("health"):
         return {"ok": True, "model": "FLUX.2-klein-4B", "steps": 4, "lock_line": LOCK[:80]}
-    scene = str(inp.get("prompt") or "").strip()
-    width, height = resolve_size(inp.get("width"), inp.get("height"), inp.get("preset"))
-    steps = clamp_steps(inp.get("steps"))
-    seed = int(inp.get("seed", -1))
+    scene = str(input_data.get("prompt") or "").strip()
+    width, height = resolve_size(input_data.get("width"), input_data.get("height"), input_data.get("preset"))
+    steps = clamp_steps(input_data.get("steps"))
+    seed = int(input_data.get("seed", -1))
     if seed < 0:
         seed = random.randint(0, 2**31 - 1)
-    lock = "tight" if str(inp.get("lock", "fast")).lower() == "tight" else "fast"
+    lock = "tight" if str(input_data.get("lock", "fast")).lower() == "tight" else "fast"
     t0 = time.perf_counter()
     image = _generate(scene, width, height, seed, steps, lock)
     torch.cuda.synchronize()
-    gen_s = round(time.perf_counter() - t0, 3)
     return {
         "image_b64": _jpeg_b64(image),
         "format": "jpg",
@@ -117,11 +116,20 @@ def handler(job: dict) -> dict:
         "seed": seed,
         "steps": steps,
         "lock": lock,
-        "gen_s": gen_s,
+        "gen_s": round(time.perf_counter() - t0, 3),
         "model": "FLUX.2-klein-4B",
     }
 
 
-if __name__ == "__main__":
-    load_pipeline()
-    runpod.serverless.start({"handler": handler})
+def handler(event):
+    """Queue-based worker. Runpod calls this once per job.
+
+    https://docs.runpod.io/serverless/overview#handler-functions
+    """
+    input_data = event["input"]
+    return process_data(input_data)
+
+
+# Load Klein before the worker accepts jobs. This time is the cold start.
+load_pipeline()
+runpod.serverless.start({"handler": handler})
